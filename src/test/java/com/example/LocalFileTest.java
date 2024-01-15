@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.example.basics.LocalFile;
+
 @RunWith(JUnit4.class)
 public class LocalFileTest {
     @Rule

@@ -6,14 +6,13 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-package com.example;
+package com.example.basics;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
-import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
@@ -23,23 +22,18 @@ import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TypeDescriptors;
 
-public class LocalFile {
+public class App {
 	public interface Options extends StreamingOptions {
 		@Description("Input text to print.")
 		@Default.String("My input text")
 		String getInputText();
 
 		void setInputText(String value);
-
-		@Default.String("/Users/eli_g/Developer/beam-starter-java/sample1000.csv")
-		String getInputFile();
-
-		void setInputFile(String value);
 	}
 
-	public static PCollection<String> buildPipeline(Pipeline pipeline, String inputFile) {
+	public static PCollection<String> buildPipeline(Pipeline pipeline, String inputText) {
 		return pipeline
-				.apply("Read file", TextIO.read().from(inputFile))
+				.apply("Create elements", Create.of(Arrays.asList("Hello", "World!", inputText)))
 				.apply("Print elements",
 						MapElements.into(TypeDescriptors.strings()).via(x -> {
 							System.out.println(x);
@@ -50,7 +44,7 @@ public class LocalFile {
 	public static void main(String[] args) {
 		var options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
 		var pipeline = Pipeline.create(options);
-		LocalFile.buildPipeline(pipeline, options.getInputFile());
+		App.buildPipeline(pipeline, options.getInputText());
 		pipeline.run().waitUntilFinish();
 	}
 }

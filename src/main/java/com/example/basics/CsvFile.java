@@ -1,4 +1,4 @@
-package com.example;
+package com.example.basics;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
