@@ -1,4 +1,4 @@
-package com.example.aggregations;
+package com.example.transforms.aggregations;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
