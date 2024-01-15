@@ -23,7 +23,7 @@ import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TypeDescriptors;
 
-public class File {
+public class LocalFile {
 	public interface Options extends StreamingOptions {
 		@Description("Input text to print.")
 		@Default.String("My input text")
@@ -50,7 +50,7 @@ public class File {
 	public static void main(String[] args) {
 		var options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
 		var pipeline = Pipeline.create(options);
-		File.buildPipeline(pipeline, options.getInputFile());
+		LocalFile.buildPipeline(pipeline, options.getInputFile());
 		pipeline.run().waitUntilFinish();
 	}
 }

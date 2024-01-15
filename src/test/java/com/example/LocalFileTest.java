@@ -8,13 +8,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class FileTest {
+public class LocalFileTest {
     @Rule
     public final transient TestPipeline pipeline = TestPipeline.create();
 
     @Test
     public void fileRuns() {
-        var elements = File.buildPipeline(pipeline, "./sample1000.csv");
+        var elements = LocalFile.buildPipeline(pipeline, "./sample1000.csv");
 
         // Check that elements not empty.
         PAssert.that(elements).satisfies(x -> {
