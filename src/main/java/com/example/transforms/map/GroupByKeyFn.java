@@ -1,5 +1,8 @@
 package com.example.transforms.map;
 
+import static org.apache.beam.sdk.values.TypeDescriptors.kvs;
+import static org.apache.beam.sdk.values.TypeDescriptors.strings;
+
 // Licensed to the Apache Software Foundation (ASF) under one or more
 // contributor license agreements.  See the NOTICE file distributed with
 // this work for additional information regarding copyright ownership.
@@ -20,6 +23,7 @@ import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.*;
+import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TypeDescriptors;
 import org.slf4j.Logger;
@@ -34,21 +38,25 @@ public class GroupByKeyFn {
         Pipeline pipeline = Pipeline.create(options);
 
         // List of elements
-        PCollection<String> input = pipeline.apply(Create.of("Apache Beam", "Unified Batch and Streaming"));
+        PCollection<String> input = pipeline.apply(
+                Create.of("apple", "ball", "car", "bear", "cheetah", "ant"));
 
-        // The applyTransform() converts [sentences] to [output]
-        PCollection<String> output = applyTransform(input);
+        // The applyTransform() converts [words] to [output]
+        PCollection<KV<String, Iterable<String>>> output = applyTransform(input);
 
-        output.apply("Log", ParDo.of(new LogOutput<String>()));
+        output.apply("Log", ParDo.of(new LogOutput<KV<String, Iterable<String>>>()));
 
         pipeline.run();
     }
 
-    // The method returns a list of converted strings in sentences
-    static PCollection<String> applyTransform(PCollection<String> input) {
-        return input.apply(
-                FlatMapElements.into(TypeDescriptors.strings())
-                        .via(sentence -> Arrays.asList(sentence.split(" "))));
+    // The method returns a map which key will be the first letter, and the values
+    // are a list of words
+    static PCollection<KV<String, Iterable<String>>> applyTransform(PCollection<String> input) {
+        return input
+                .apply(MapElements.into(kvs(strings(), strings()))
+                        .via(word -> KV.of(word.substring(0, 1), word)))
+
+                .apply(GroupByKey.create());
     }
 
     static class LogOutput<T> extends DoFn<T, T> {
